@@ -1,6 +1,6 @@
 # PCA has been around for 100 years!
 
-This is my implementation of principal component analysis as part of the final project for the Mathematics for Machine Learning: PCA course from Imperial College London[<a href="https://www.coursera.org/account/accomplishments/certificate/PBYVD7BRK88U" title="coursera.com" rel="nofollow">1</a></li>], hosted by Coursera. 
+This is my implementation of principal component analysis as part of the final project for the Mathematics for Machine Learning: PCA specialization from Imperial College London[<a href="https://www.coursera.org/account/accomplishments/certificate/PBYVD7BRK88U" title="coursera.com" rel="nofollow">1</a></li>], hosted by Coursera. 
 
 If we have some large group of data living in two-dimensions that we need to compress in order to find the most important patterns in that data for a given problem, we need to find a good one-dimensional subspace to minimize the average squared reconstruction error (loss function) of the data points. The ASRE being the variance of a ratio of summed squares equivalent to Pythagoras’s theorem, which defines the principal directions of PCA’s orthogonal basis vectors.
 
