@@ -14,5 +14,5 @@ The assignment required:
 
 1. An implementation of the main steps of PCA
 2. The application of PCA to an image dataset with a limited number of samples
-3. An implementation of PCA for a high-dimensional version of the dataset
+3. An implementation of PCA for a high-dimensional version of the same dataset
 4. The time/space complexity between both versions of the algorithm
