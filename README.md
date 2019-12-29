@@ -8,7 +8,7 @@ If we have some large group of data living in two-dimensions that we need to com
   <img src="https://media.giphy.com/media/lly63TqgYYsoNWhjzc/giphy.gif">
 </p>
 
-When plotting the original dataset with their original projections onto a one-dimensional subspace, you can see that some   projections are more informative than others, and PCA will find the best projection with respect to its partial derivatives and their parameters using the multivariate chain rule by maximizing the variance of the data points after projecting. This allows us to choose the number of principal components which by design allows us to remove variables from the data that are least important to correlation. 
+When plotting the original dataset with their original projections onto a one-dimensional subspace, you can see that some   projections are more informative than others, and PCA will find the best projection with respect to its partial derivatives and their parameters using the multivariate chain rule by maximizing the variance of the data points after projection. This allows us to choose the number of principal components which by design allows us to remove variables from the data that are least important to correlation. 
 
 The assignment required:
 
