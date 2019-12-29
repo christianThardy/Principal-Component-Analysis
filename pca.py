@@ -24,7 +24,7 @@ plt.imshow(images[0].reshape(28,28), cmap = 'gray');
 
 
 '''
-   The next four functions preprocess the data so the images can have a zero mean and one variance
+   The next four functions preprocess the data so the images can have a zero mean and variance of one
    The pixel encodings are originally uint8 and must be converted to a floating point number between 0-1
    The mean μ must be subtracted from each image
    Each image must be scaled dimensionally by 1/σ, where σ is the standard deviation
