@@ -1,8 +1,9 @@
 # Needs refactoring
-
 # Dependencies
-import numpy as np
 import timeit
+
+import numpy as np
+import pandas as pd
 
 import matplotlib as mpl
 mpl.use('Agg')
@@ -47,7 +48,6 @@ def normalize(X):
 
 # Computes the eigenvalues and corresponding eigenvectors for the covariance matrix S and sorts by the 
 # largest eigenvalues and corresponding eigenvectors
-
 def eig(S):
     ''' 
         the eigenvals and eigenvecs should be sorted in descending
@@ -73,7 +73,6 @@ def projection_matrix(B):
    X_reconstruct: ndarray of the reconstruction of X from the first `num_components` principal components
 '''
 def PCA(X, num_components):
-
     X, mean, std = normalize(X)
     S = np.cov(X, rowvar = False, bias = True)
     eig_vals, eig_vecs = eig(S)
@@ -82,64 +81,10 @@ def PCA(X, num_components):
     return X_reconstruct 
 
 
-# More data preprocessing
-
-NUM_DATAPOINTS = 1000
-X = (images.reshape(-1, 28 * 28)[:NUM_DATAPOINTS]) / 255.
-print(X.shape)
-Xbar, mu, std = normalize(X)
-print(mu.shape)
-print(std.shape)
-
-
-# The number of principal components we use, the smaller the reconstruction error will be
-
-for num_component in range(1, 20):
-    from sklearn.decomposition import PCA as SKPCA
-    # Computes a standard solution given by scikit-learn's implementation of PCA
-    pca = SKPCA(n_components = num_component, svd_solver = 'full')
-    sklearn_reconst = pca.inverse_transform(pca.fit_transform(Xbar))
-    reconst = PCA(Xbar, num_component)
-    np.testing.assert_almost_equal(reconst, sklearn_reconst)
-    print(np.square(reconst - sklearn_reconst).sum())
-
-
 # How many principal components do we need in order to reach a mean squared error of less than 100 for the dataset?
-
  def mse(predict, actual):
     '''Helper function that computes the mean squared error (MSE)'''
     return np.square(predict - actual).sum(axis = 1).mean()
-
-loss = []
-reconstructions = []
-
-
-# Iterates over different number of principal components, and computes the MSE
-
-for num_component in range(1, 100):
-    reconst = PCA(Xbar, num_component)
-    error = mse(reconst, Xbar)
-    reconstructions.append(reconst)
-    # print('n = {:d}, reconstruction_error = {:f}'.format(num_component, error))
-    loss.append((num_component, error))
-
-reconstructions = np.asarray(reconstructions)
-reconstructions = reconstructions * std + mu # 'unnormalize' the reconstructed image
-loss = np.asarray(loss)
-
-
-# Creates a table showing the number of principal components and MSE
-
-import pandas as pd
-pd.DataFrame(loss).head(10)
-
-# A plot of the numbers from the table above
-
-fig, ax = plt.subplots()
-ax.plot(loss[:,0], loss[:,1]);
-ax.axhline(100, linestyle = '--', color = 'r', linewidth=2)
-ax.xaxis.set_ticks(np.arange(1, 100, 5));
-ax.set(xlabel =' num_components', ylabel = 'MSE', title='MSE vs number of principal components');
 
 
 '''
@@ -164,28 +109,70 @@ def PCA_high_dim(X, n_components):
     X_reconstruct = (P @ X.T).T
     return X_reconstruct 
 
-# Invariant to test the PCA_high_dim implementation
-
- np.testing.assert_almost_equal(PCA(Xbar, 2), PCA_high_dim(Xbar, 2))
-
 
 # Defines a function that finds time/space complexity by comparing the running time between PCA and PCA_high_dim
+def time(f, repeat=10):
+   times = []
+   for _ in range(repeat):
+      start = timeit.default_timer()
+      f()
+      stop = timeit.default_timer()
+      times.append(stop-start)
+   return np.mean(times), np.std(times)
 
- def time(f, repeat=10):
-    times = []
-    for _ in range(repeat):
-        start = timeit.default_timer()
-        f()
-        stop = timeit.default_timer()
-        times.append(stop-start)
-    return np.mean(times), np.std(times)
 
-    times_mm0 = []
+# More data preprocessing
+NUM_DATAPOINTS = 1000
+X = (images.reshape(-1, 28 * 28)[:NUM_DATAPOINTS]) / 255.
+print(X.shape)
+Xbar, mu, std = normalize(X)
+print(mu.shape)
+print(std.shape)
+
+# The number of principal components we use, the smaller the reconstruction error will be
+for num_component in range(1, 20):
+    from sklearn.decomposition import PCA as SKPCA
+    # Computes a standard solution given by scikit-learn's implementation of PCA
+    pca = SKPCA(n_components = num_component, svd_solver = 'full')
+    sklearn_reconst = pca.inverse_transform(pca.fit_transform(Xbar))
+    reconst = PCA(Xbar, num_component)
+    np.testing.assert_almost_equal(reconst, sklearn_reconst)
+    print(np.square(reconst - sklearn_reconst).sum())
+
+# Loss and reconstruction variables
+loss = []
+reconstructions = []
+
+# Iterates over different number of principal components, and computes the MSE
+for num_component in range(1, 100):
+    reconst = PCA(Xbar, num_component)
+    error = mse(reconst, Xbar)
+    reconstructions.append(reconst)
+    # print('n = {:d}, reconstruction_error = {:f}'.format(num_component, error))
+    loss.append((num_component, error))
+
+reconstructions = np.asarray(reconstructions)
+reconstructions = reconstructions * std + mu # 'unnormalize' the reconstructed image
+loss = np.asarray(loss)
+
+# Creates a table showing the number of principal components and MSE
+pd.DataFrame(loss).head(10)
+
+# A plot of the numbers from the table above
+fig, ax = plt.subplots()
+ax.plot(loss[:,0], loss[:,1]);
+ax.axhline(100, linestyle = '--', color = 'r', linewidth=2)
+ax.xaxis.set_ticks(np.arange(1, 100, 5));
+ax.set(xlabel =' num_components', ylabel = 'MSE', title='MSE vs number of principal components');
+
+# Invariant to test the PCA_high_dim implementation
+ np.testing.assert_almost_equal(PCA(Xbar, 2), PCA_high_dim(Xbar, 2))
+    
+# Variables for time function
+times_mm0 = []
 times_mm1 = []
 
-
 # Iterate over datasets of different size by computing the running time of X^TX and XX^T
-
 for datasetsize in np.arange(4, 784, step = 0):
     XX = Xbar[:datasetsize] # Selects the first `datasetsize` samples in the dataset
     # Records the running time for computing X.T @ X
@@ -200,9 +187,7 @@ for datasetsize in np.arange(4, 784, step = 0):
 times_mm0 = np.asarray(times_mm0)
 times_mm1 = np.asarray(times_mm1)
 
-
 # Plots the running time of computing X @ X.T(X^TX) and X @ X.T(XX^T)
-
 fig, ax = plt.subplots()
 ax.set(xlabel = 'size of dataset', ylabel = 'running time')
 bar = ax.errorbar(times_mm0[:, 0], times_mm0[:, 1], times_mm0[:, 2], label = '$X^T X$ (PCA)', linewidth = 2)
@@ -213,9 +198,7 @@ ax.legend();
 %time Xbar @ Xbar.T
 pass # Put this here so that our output does not show result of computing `Xbar @ Xbar.T`
 
-
 # Iterate over datasets of different size and benchmarks the running time of both algorithms
-
 times0 = []
 times1 = []
 
@@ -231,9 +214,7 @@ for datasetsize in np.arange(4, 784, step = 100):
 times0 = np.asarray(times0)
 times1 = np.asarray(times1)
 
-
 # Plots the time/space complexity of each algorithm
-
 fig, ax = plt.subplots()
 ax.set(xlabel = 'number of datapoints', ylabel = 'run time')
 ax.errorbar(times0[:, 0], times0[:, 1], times0[:, 2], label = 'PCA', linewidth=2)
