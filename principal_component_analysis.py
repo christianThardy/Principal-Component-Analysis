@@ -213,12 +213,11 @@ print(std.shape)
 
 # LEFT OFF HERE
 # LEFT OFF HERE
-# LEFT OFF HERE
 # The number of principal components we use, the smaller the reconstruction error will be
 for num_component in range(1, 20):
     from sklearn.decomposition import PCA as SKPCA
     # Computes a standard solution given by scikit-learn's implementation of PCA
-    pca = SKPCA(n_components = num_component, svd_solver = 'full')
+    pca = pca(n_components = num_component, svd_solver = 'full')
     sklearn_reconst = pca.inverse_transform(pca.fit_transform(Xbar))
     reconst = PCA(Xbar, num_component)
     np.testing.assert_almost_equal(reconst, sklearn_reconst)
