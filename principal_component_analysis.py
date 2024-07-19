@@ -225,7 +225,7 @@ for num_component in range(1, 20):
     # Reconstruct using sklearn PCA
     sklearn_reconstructed = pca.inverse_transform(pca.fit_transform(X_normalized))
     # Reconstruct using custom PCA
-    custom_reconstructed = PCA(X_normalized, num_component)
+    custom_reconstructed = pca(X_normalized, num_component)
     # Assert almost equal
     np.testing.assert_almost_equal(custom_reconstructed, sklearn_reconstructed)
     print(np.square(reconst - sklearn_reconst).sum())
@@ -236,37 +236,50 @@ reconstruction_errors = []
 # Initialize list to store reconstructions
 reconstructions = []
 
-# LEFT OFF HERE
-# LEFT OFF HERE
-# Iterates over different number of principal components, and computes the MSE
+
+# Iterates over number of principal components
 for num_component in range(1, 100):
-    reconst = PCA(Xbar, num_component)
-    error = mse(reconst, Xbar)
-    reconstructions.append(reconst)
-    # print('n = {:d}, reconstruction_error = {:f}'.format(num_component, error))
+    # Reconstruct using custom PCA
+    reconstructed = pca(X_normalized, num_component)
+    # Compute reconstruction error
+    error = mean_squared_error(reconstructed, X_normalized)
+    # Append reconstructed data to list
+    reconstructions.append(reconstructed)
+    # Append error to list
     loss.append((num_component, error))
 
+# Convert reconstructions to ndarray
 reconstructions = np.asarray(reconstructions)
-reconstructions = reconstructions * std + mu # 'unnormalize' the reconstructed image
-loss = np.asarray(loss)
+# Unnormalize the reconstructed images
+reconstructions = reconstructions * std_dev + mu
+# Convert errors to ndarray
+reconstruction_errors = np.asarray(reconstruction_errors)
 
 # Creates a table showing the number of principal components and MSE
-pd.DataFrame(loss).head(10)
+pd.DataFrame(reconstruction_errors).head(10)
 
-# A plot of the numbers from the table above
+# Plot MSE vs number of principal components
 fig, ax = plt.subplots()
-ax.plot(loss[:,0], loss[:,1]);
+# Plot errors
+ax.plot(reconstruction_errors[:,0], reconstruction_errors[:,1])
+# Add horizontal line at MSE=100
 ax.axhline(100, linestyle = '--', color = 'r', linewidth=2)
 ax.xaxis.set_ticks(np.arange(1, 100, 5));
-ax.set(xlabel =' num_components', ylabel = 'MSE', title='MSE vs number of principal components');
+ax.set(xlabel =' num_components', ylabel = 'MSE', title='MSE vs Number of Principal Components');
 
-# Invariant to test the PCA_high_dim implementation
- np.testing.assert_almost_equal(PCA(Xbar, 2), PCA_high_dim(Xbar, 2))
+# Validate the PCA_high_dim implementation
+ np.testing.assert_almost_equal(pca(X_normalized, 2), pca_high_dimensional(X_normalized, 2))
     
-# Variables for time function
-times_mm0 = []
-times_mm1 = []
+# Variables to store measurements
+# Initialize list to store times for X^TX and XX^T
+times_xtx = []
+times_xxt = []
 
+
+# LEFT OFF HERE
+# LEFT OFF HERE
+# LEFT OFF HERE
+# LEFT OFF HERE
 # Iterate over datasets of different size by computing the running time of X^TX and XX^T
 for datasetsize in np.arange(4, 784, step = 0):
     XX = Xbar[:datasetsize] # Selects the first `datasetsize` samples in the dataset
