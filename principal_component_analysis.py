@@ -203,30 +203,41 @@ def time(func, repeat=10):
    return np.mean(times), np.std(times)
 
 
-# More data preprocessing
+# Data preprocessing
+# Define number of datapoints to use
 NUM_DATAPOINTS = 1000
-X = (images.reshape(-1, 28 * 28)[:NUM_DATAPOINTS]) / 255.
+# Reshape and normalize images
+X = (images.reshape(-1, 28 * 28)[:NUM_DATAPOINTS]) / 255.0
 print(X.shape)
-Xbar, mu, std = normalize(X)
+# Normalize X
+X_normalized, mu, std_dev = normalize(X)
 print(mu.shape)
-print(std.shape)
+print(std_de.shape)
 
-# LEFT OFF HERE
-# LEFT OFF HERE
+
 # The number of principal components we use, the smaller the reconstruction error will be
+# Iterate PCA from sklearn
 for num_component in range(1, 20):
+    # Compare custom PCA implementation with sklean's implementation
     from sklearn.decomposition import PCA as SKPCA
-    # Computes a standard solution given by scikit-learn's implementation of PCA
-    pca = pca(n_components = num_component, svd_solver = 'full')
-    sklearn_reconst = pca.inverse_transform(pca.fit_transform(Xbar))
-    reconst = PCA(Xbar, num_component)
-    np.testing.assert_almost_equal(reconst, sklearn_reconst)
+    # Initialize sklearn PCA
+    pca = SKPCA(n_components = num_component, svd_solver = 'full')
+    # Reconstruct using sklearn PCA
+    sklearn_reconstructed = pca.inverse_transform(pca.fit_transform(X_normalized))
+    # Reconstruct using custom PCA
+    custom_reconstructed = PCA(X_normalized, num_component)
+    # Assert almost equal
+    np.testing.assert_almost_equal(custom_reconstructed, sklearn_reconstructed)
     print(np.square(reconst - sklearn_reconst).sum())
 
-# Loss and reconstruction variables
-loss = []
+# Evaluate reconstruction error for different number of principal components
+# Initialize list to store errors
+reconstruction_errors = []
+# Initialize list to store reconstructions
 reconstructions = []
 
+# LEFT OFF HERE
+# LEFT OFF HERE
 # Iterates over different number of principal components, and computes the MSE
 for num_component in range(1, 100):
     reconst = PCA(Xbar, num_component)
