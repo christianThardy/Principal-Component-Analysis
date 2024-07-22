@@ -275,26 +275,26 @@ ax.set(xlabel =' num_components', ylabel = 'MSE', title='MSE vs Number of Princi
 times_xtx = []
 times_xxt = []
 
-
-# LEFT OFF HERE
-# LEFT OFF HERE
-# LEFT OFF HERE
-# LEFT OFF HERE
 # Iterate over datasets of different size by computing the running time of X^TX and XX^T
-for datasetsize in np.arange(4, 784, step = 0):
-    XX = Xbar[:datasetsize] # Selects the first `datasetsize` samples in the dataset
-    # Records the running time for computing X.T @ X
-    mu, sigma = time(lambda : XX.T @ XX)
-    times_mm0.append((datasetsize, mu, sigma))
-    
-    # Records the running time for computing X @ X.T
+for dataset_size in np.arange(4, 784, step = 100):
+    # Get subset of data
+    subset_X = Xnormalized[:dataset_size]
+    '''
+    Set number of principal components, measure time for PCA,
+    record the running time for computing X.T @ X'''
+    mu_time, std_time = measure_time(lambda: pca(subset_X, num_principal_components), repeat=10)
+    # Append result to list
+    times_pca.append((dataset_size, mu_time, std_time))
 
-    mu, sigma = time(lambda : XX @ XX.T)
-    times_mm1.append((datasetsize, mu, sigma))
-    
-times_mm0 = np.asarray(times_mm0)
-times_mm1 = np.asarray(times_mm1)
+# Convert times_pca to ndarray
+times_pca = np.asarray(times_pca)
+# Convert times_pca_hd to ndarray
+times_pca_hd = np.asarray(times_pca_hd)
 
+# LEFT OFF HERE
+# LEFT OFF HERE
+# LEFT OFF HERE
+# LEFT OFF HERE
 # Plots the running time of computing X @ X.T(X^TX) and X @ X.T(XX^T)
 fig, ax = plt.subplots()
 ax.set(xlabel = 'size of dataset', ylabel = 'running time')
