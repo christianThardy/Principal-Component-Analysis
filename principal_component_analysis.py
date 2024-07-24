@@ -291,37 +291,72 @@ times_pca = np.asarray(times_pca)
 # Convert times_pca_hd to ndarray
 times_pca_hd = np.asarray(times_pca_hd)
 
-# LEFT OFF HERE
-# LEFT OFF HERE
-# LEFT OFF HERE
-# LEFT OFF HERE
+# Variables to store measurements
+# Initialize list to store times for X^TX and XX^T
+times_xtx = []
+times_xxt = []
+
+# Iterate over datasets of different size by computing the running time of X^TX and XX^T
+for dataset_size in np.arange(4, 784, step = 100):
+    # Get subset of data
+    subset_X = X_normalized[:dataset_size]
+    '''
+    Set number of principal components, measure time for PCA,
+    record the running time for computing X.T @ X'''
+    mu_time, std_time = measure_time(lambda: subset_X.T @ subset_X)
+    # Append result to list
+    times_xtx.append((dataset_size, mu_time, std_time))
+
+# Convert times_xtx to ndarray
+times_xtx = np.asarray(times_xtx)
+# Convert times_xxt to ndarray
+times_xxt = np.asarray(times_xxt)
+
 # Plots the running time of computing X @ X.T(X^TX) and X @ X.T(XX^T)
+# Create figure and axes
 fig, ax = plt.subplots()
+# Set axis labels
 ax.set(xlabel = 'size of dataset', ylabel = 'running time')
-bar = ax.errorbar(times_mm0[:, 0], times_mm0[:, 1], times_mm0[:, 2], label = '$X^T X$ (PCA)', linewidth = 2)
-ax.errorbar(times_mm1[:, 0], times_mm1[:, 1], times_mm1[:, 2], label = '$X X^T$ (PCA_high_dim)', linewidth = 2)
-ax.legend();
+# Plot times for X^TX
+bar = ax.errorbar(times_xtx[:, 0], times_xtx[:, 1], times_xtx[:, 2], label = '$X^T X$ (PCA)', linewidth = 2)
+# Plot times for XX^T
+ax.errorbar(times_xxt[:, 0], times_xxt[:, 1], times_xxt[:, 2], label = '$X X^T$ (PCA_high_dim)', linewidth = 2)
+ax.legend()
 
-%time Xbar.T @ Xbar
-%time Xbar @ Xbar.T
-pass # Put this here so that our output does not show result of computing `Xbar @ Xbar.T`
+# Measure execution time for PCA and PCA_high_dim
+%time pca(X_normalized, 2)
+%time pca_high_dimensional(X_normalized, 2)
+pass # Put this here so that our output does not show result of computing `X_normalized @ X_normalized.T`
 
-# Iterate over datasets of different size and benchmarks the running time of both algorithms
-times0 = []
-times1 = []
+# Measure running time of PCA and PCA_high_dim for different dataset sizes
+# Initialize list to store times for PCA
+times_pca = []
+# Initialize list to tstore times for PCA_high_dim
+times_pca_hd = []
 
-for datasetsize in np.arange(4, 784, step = 100):
-    XX = Xbar[:datasetsize]
-    npc = 2
-    mu, sigma = time(lambda : PCA(XX, npc), repeat = 10)
-    times0.append((datasetsize, mu, sigma))
-    
-    mu, sigma = time(lambda : PCA_high_dim(XX, npc), repeat = 10)
-    times1.append((datasetsize, mu, sigma))
-    
-times0 = np.asarray(times0)
-times1 = np.asarray(times1)
+# Iterate over dataset sizes
+for dataset_size in np.arange(4, 784, step = 100):
+    # Get subset of data
+    subset_X = X_normalized[:dataset_size]
+    # Set number of principal components
+    num_principal_components = 2
+    # Measure time for PCA
+    mu_time, std_time = measure_time(lambda: pca(subset_X, num_principal_components), repeat = 10)
+    # Append result to list
+    times_pca.append((dataset_size, mu_time, std_time))
 
+    # Measure time for PCA_high_dim
+    mu_time, std_time = measure_time(lambda: pca_high_dimensional(subset_X, num_principal_components), repeat = 10)
+    times_pca_hd.append((dataset_size, mu_time, std_time))
+
+# Convert times_pca to ndarray
+times_pca = np.asarray(times_pca)
+times_pca_hd = np.asarray(times_pca_hd)
+
+# LEFT OFF HERE
+# LEFT OFF HERE
+# LEFT OFF HERE
+# LEFT OFF HERE
 # Plots the time/space complexity of each algorithm
 fig, ax = plt.subplots()
 ax.set(xlabel = 'number of datapoints', ylabel = 'run time')
