@@ -10,6 +10,7 @@ from ipywidgets import interact
 
 import matplotlib as mpl
 mpl.use('Agg')
+
 import matplotlib.pyplot as plt
 plt.style.use('fivethirtyeight')
 %matplotlib inline
@@ -18,7 +19,6 @@ plt.style.use('fivethirtyeight')
 # Load MNIST dataset
 MNIST = load_mnist()
 images, labels = MNIST['data'], MNIST['target']
-
 
 # Quick plot of an image from the dataset to make sure data loaded properly
 plt.figure(figsize = (4,4))
@@ -32,7 +32,6 @@ a floating point number between 0-1. The mean mu, μ, must be subtracted from ea
 Each image must be scaled dimensionally by 1/σ, where σ is the standard deviation,
 X_normalized will be the normalized dataset.
 '''
-
 def normalize(X):
     '''
     Normalize the dataset X.
@@ -45,9 +44,9 @@ def normalize(X):
     mean: ndarray of shape (D,) - mean of each feature
     std_dev: ndarray of shape (D,) - standard deviation of each feature
     
-     In the future, you could encounter dimensions where the standard deviation is
-     zero, for those when you do normalization the normalized data will be NaN. 
-     Handle this by setting using `std = 1` for those dimensions when doing normalization.
+    In the future, you could encounter dimensions where the standard deviation is
+    zero, for those when you do normalization the normalized data will be NaN. 
+    Handle this by setting using `std = 1` for those dimensions when doing normalization.
     '''
     # Calculate the mean of each feature
     mu = np.mean(X, axis = 0) 
@@ -206,14 +205,15 @@ def time(func, repeat=10):
 # Data preprocessing
 # Define number of datapoints to use
 NUM_DATAPOINTS = 1000
+
 # Reshape and normalize images
 X = (images.reshape(-1, 28 * 28)[:NUM_DATAPOINTS]) / 255.0
 print(X.shape)
+
 # Normalize X
 X_normalized, mu, std_dev = normalize(X)
 print(mu.shape)
 print(std_de.shape)
-
 
 # The number of principal components we use, the smaller the reconstruction error will be
 # Iterate PCA from sklearn
@@ -235,7 +235,6 @@ for num_component in range(1, 20):
 reconstruction_errors = []
 # Initialize list to store reconstructions
 reconstructions = []
-
 
 # Iterates over number of principal components
 for num_component in range(1, 100):
@@ -264,8 +263,8 @@ fig, ax = plt.subplots()
 ax.plot(reconstruction_errors[:,0], reconstruction_errors[:,1])
 # Add horizontal line at MSE=100
 ax.axhline(100, linestyle = '--', color = 'r', linewidth=2)
-ax.xaxis.set_ticks(np.arange(1, 100, 5));
-ax.set(xlabel =' num_components', ylabel = 'MSE', title='MSE vs Number of Principal Components');
+ax.xaxis.set_ticks(np.arange(1, 100, 5))
+ax.set(xlabel =' num_components', ylabel = 'MSE', title='MSE vs Number of Principal Components')
 
 # Validate the PCA_high_dim implementation
  np.testing.assert_almost_equal(pca(X_normalized, 2), pca_high_dimensional(X_normalized, 2))
@@ -279,9 +278,8 @@ times_xxt = []
 for dataset_size in np.arange(4, 784, step = 100):
     # Get subset of data
     subset_X = Xnormalized[:dataset_size]
-    '''
-    Set number of principal components, measure time for PCA,
-    record the running time for computing X.T @ X'''
+    '''Set number of principal components, measure time for PCA,
+       record the running time for computing X.T @ X'''
     mu_time, std_time = measure_time(lambda: pca(subset_X, num_principal_components), repeat=10)
     # Append result to list
     times_pca.append((dataset_size, mu_time, std_time))
@@ -300,9 +298,8 @@ times_xxt = []
 for dataset_size in np.arange(4, 784, step = 100):
     # Get subset of data
     subset_X = X_normalized[:dataset_size]
-    '''
-    Set number of principal components, measure time for PCA,
-    record the running time for computing X.T @ X'''
+    '''Set number of principal components, measure time for PCA,
+       record the running time for computing X.T @ X'''
     mu_time, std_time = measure_time(lambda: subset_X.T @ subset_X)
     # Append result to list
     times_xtx.append((dataset_size, mu_time, std_time))
