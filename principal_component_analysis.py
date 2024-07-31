@@ -353,17 +353,21 @@ for dataset_size in np.arange(4, 784, step = 100):
 times_pca = np.asarray(times_pca)
 times_pca_hd = np.asarray(times_pca_hd)
 
-# LEFT OFF HERE
-# LEFT OFF HERE
-# LEFT OFF HERE
-# LEFT OFF HERE
 # Plots the time/space complexity of each algorithm
+# Create a new figure and axes
 fig, ax = plt.subplots()
-ax.set(xlabel = 'number of datapoints', ylabel = 'run time')
-ax.errorbar(times0[:, 0], times0[:, 1], times0[:, 2], label = 'PCA', linewidth=2)
-ax.errorbar(times1[:, 0], times1[:, 1], times1[:, 2], label = 'PCA_high_dim', linewidth=2)
+# Set axis labels
+ax.set(xlabel = 'Number of Datapoints', ylabel = 'Run Time')
+# Plot times for PCA
+ax.errorbar(times_pca[:, 0], times_pca[:, 1], times_pca[:, 2], label = 'PCA', linewidth=2)
+# Plot times for PCA_high_dim
+ax.errorbar(times_pca_hd[:, 0], times_pca_hd[:, 1], times_pca_hd[:, 2], label = 'PCA_high_dim', linewidth=2)
 ax.legend();
 
-%time PCA(Xbar, 2)
+# Measure execution time for PCA and PCA_high_dim with 2 principal components
+# Measure time for PCA with 2 components
+%time pca(X_normalized, 2)
+# Measure time for PCA_high_dim with 2 components
 %time PCA_high_dim(Xbar, 2)
+# Prevent output from showing result of computing 'X_normalized @ X_normalized.T'
 pass
